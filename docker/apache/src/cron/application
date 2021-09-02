@@ -1,0 +1,1 @@
+* * * * * www-data cd /var/www/html && /usr/local/bin/php typo3/cli_dispatch.phpsh scheduler >> /var/log/app/cron/cron.log 2>&1

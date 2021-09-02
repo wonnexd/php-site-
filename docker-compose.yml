@@ -1,0 +1,108 @@
+version: '3.7'
+
+services:
+    traefik:
+        image: traefik:1.7
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ./docker/certs:/certs:ro,cached
+        networks:
+            - traefik
+        command: --web --docker --docker.exposedbydefault=false --insecureSkipVerify=true --entryPoints="Name:https Address::443 TLS:/certs/localhost.crt,/certs/localhost.key.pem" --entryPoints="Name:http Address::80"
+        ports:
+            - '80:80'
+            - '443:443'
+            - '8080:8080'
+
+    pma:
+        image: phpmyadmin/phpmyadmin:latest
+        volumes:
+            - ./docker/pma/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php:cached
+        networks:
+            - db
+            - traefik
+        environment:
+            - PMA_HOST=mysql
+            - PMA_USER=root
+            - PMA_PASSWORD=athene
+        extra_hosts:
+            - pma.dev.localhost:127.0.0.1
+        labels:
+            - traefik.docker.network=typo3_traefik
+            - traefik.enable=true
+            - traefik.frontend.entryPoints=http,https
+            - traefik.frontend.redirect.entryPoint=https
+            - traefik.frontend.rule=Host:pma.dev.localhost
+            - traefik.port=80
+
+    typo3:
+        build:
+            context: docker/apache
+            dockerfile: Dockerfile
+        volumes:
+            - ./docker/apache/src/apache:/etc/apache2/sites-available:ro,cached
+            - ./docker/apache/src/apache:/etc/apache2/sites-enabled:ro,cached
+            - ./docker/cron.d:/etc/cron.d:ro,cached
+            - ./:/var/www/html:delegated
+            - ./docker/log:/var/log/apache:cached
+            - ./docker/php/apache2/custom.ini:/usr/local/etc/php/apache2/conf.d/99-custom.ini:ro,cached
+            - ./docker/php/cli/custom.ini:/usr/local/etc/php/conf.d/99-custom.ini:ro,cached
+            - ./docker/certs:/certs:ro,cached
+            - ~/.composer:/var/www/.composer:cached
+            - opcache:/var/www/.opcache
+        networks:
+            db:
+            mail:
+            typo3:
+              aliases:
+                  - phpdev.localhost
+            traefik:
+        environment:
+            - TYPO3_CONTEXT=Development/Local
+        extra_hosts:
+            - phpdev.localhost:127.0.0.1
+        labels:
+            - traefik.docker.network=typo3_traefik
+            - traefik.enable=true
+            - traefik.frontend.entryPoints=http
+            - traefik.frontend.rule=Host:phpdev.localhost
+
+    mysql:
+        image: mysql:5.7
+        networks:
+            db:
+                aliases:
+                    - mysql.dev.localhost
+        environment:
+            - MYSQL_ROOT_PASSWORD=athene
+            - MYSQL_ROOT_HOST=%
+        ports:
+            - '3306:3306'
+
+    mail:
+        image: mailhog/mailhog:latest
+        networks:
+            mail:
+                aliases:
+                    - mail.dev.localhost
+            traefik:
+        environment:
+            - MH_HOSTNAME=mail.dev.localhost
+        labels:
+            - traefik.docker.network=typo3_traefik
+            - traefik.enable=true
+            - traefik.frontend.entryPoints=http,https
+            - traefik.frontend.redirect.entryPoint=https
+            - traefik.frontend.rule=Host:mail.dev.localhost
+            - traefik.port=8025
+
+volumes:
+    db:
+    opcache:
+
+networks:
+    db:
+    mail:
+    traefik:
+        name: typo3_traefik
+    typo3:

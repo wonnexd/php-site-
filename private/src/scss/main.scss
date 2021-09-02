@@ -1,0 +1,23 @@
+$success: #29A329;
+
+@import "src/scss/vendor/bootstrap/scss/bootstrap";
+
+.bg-title {
+  background-color: #e6e6e6;
+}
+
+.nav-bg {
+  background-color: #333333;
+}
+
+.hr-light {
+  background-color: #333333;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.pad-zero {
+  padding: 0;
+}

@@ -1,0 +1,24 @@
+{
+  "name": "wonne-web",
+  "version": "1.0.0",
+  "description": "A Simple Grunt Sass Starter Template",
+  "author": "Timo",
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10.16.1"
+  },
+  "keywords": [
+    "grunt, sass"
+  ],
+  "devDependencies": {
+    "grunt": "^1.4.1",
+    "grunt-contrib-clean": "^2.0.0",
+    "grunt-contrib-jshint": "^3.0.0",
+    "grunt-contrib-uglify": "^5.0.1",
+    "grunt-contrib-watch": "^1.1.0"
+  },
+  "dependencies": {
+    "grunt-sass": "^3.1.0",
+    "node-sass": "^6.0.1"
+  }
+}

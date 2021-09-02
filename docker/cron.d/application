@@ -1,0 +1,1 @@
+* * * * * tran [ -f /var/www/html/public/typo3/sysext/core/bin/typo3 ] && cd /var/www/html && /usr/local/bin/php public/typo3/sysext/core/bin/typo3 scheduler:run >> /var/log/app/cron/cron.log 2>&1
