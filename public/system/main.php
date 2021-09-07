@@ -18,8 +18,13 @@ class core
             "groesse" => 170
         ];
 
-        $database->addSingleEntry($newgirl);
+        /*
+       $database->addSingleEntry($newgirl);
+       $database->addDataEntry();
+               $database->getAllEntries();
+        */
 
-        var_dump($database);
+       $database->getOneEntry();
+
     }
 }
